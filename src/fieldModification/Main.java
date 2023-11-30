@@ -1,6 +1,7 @@
 package fieldModification;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -42,7 +43,14 @@ public class Main {
             }
 
             field.setAccessible(true);
-            Object parsedValue = parseValue(field.getType(), propertyValue);
+            Object parsedValue;
+
+            if (field.getType().isArray()) {
+                parsedValue = parseArray(field.getType().getComponentType(), propertyValue);
+            } else {
+                parsedValue = parseValue(field.getType(), propertyValue);
+            }
+
             field.set(configInstance, parsedValue);
         }
 
@@ -60,5 +68,15 @@ public class Main {
         throw new RuntimeException(String.format("Type: %s unsupported", type.getTypeName()));
     }
 
+    private static Object parseArray(Class<?> arrayElementType, String value) {
+        String[] elementValues = value.split(",");
+        Object arrayObject = Array.newInstance(arrayElementType, elementValues.length);
+
+        for (int i = 0; i < elementValues.length; i++) {
+            Array.set(arrayObject, i, parseValue(arrayElementType, elementValues[i]));
+        }
+
+        return arrayObject;
+    }
 
 }
