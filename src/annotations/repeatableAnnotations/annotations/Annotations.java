@@ -17,6 +17,18 @@ public class Annotations {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface PermissionsContainer {
-        Permissions [] value();
+        Permissions[] value();
+    }
+
+    @Target(ElementType.METHOD)
+    @Repeatable(MethodOperationsContainer.class)
+    public @interface MethodOperations {
+        OperationType[] value();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface MethodOperationsContainer {
+        MethodOperations[] value();
     }
 }
